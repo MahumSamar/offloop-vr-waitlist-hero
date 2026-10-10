@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Offloop — Scale your team's work without scaling headcount</title>
+<meta name="description" content="Offloop helps small teams run recurring work with AI agents across launches, customer follow-up, research, feedback, growth, and operations.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#ffffff;
+    --ink-2:#c9ccd1;
+    --ink-3:#9a9ea6;
+    --ink-4:#6e727a;
+    --panel:rgba(8,10,14,.62);
+    --panel-inner:rgba(0,0,0,.38);
+    --pill:rgba(255,255,255,.08);
+    --tile:rgba(255,255,255,.07);
+    --btn:#1a1c21;
+    --sans:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+    --serif:"Instrument Serif",Georgia,"Times New Roman",serif;
+    --gutter:clamp(20px,3vw,44px);
+    --nav-h:72px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:var(--sans);
+    color:var(--ink);
+    background:#061420;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    overflow-x:hidden;
+  }
+  a{color:inherit;text-decoration:none}
+  button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+  :focus-visible{outline:2px solid #fff;outline-offset:3px;border-radius:999px}
+
+  /* ---------- Hero shell ---------- */
+  .hero{
+    position:relative;
+    min-height:100vh;
+    min-height:100svh;
+    width:100%;
+    overflow:hidden;
+    isolation:isolate;
+    display:flex;
+    flex-direction:column;
+  }
+  .hero__bg{
+    position:absolute;inset:0;z-index:-2;
+    width:100%;height:100%;
+    object-fit:cover;object-position:center;
+    background:#061420 url("https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20261010_060826_51421542-7933-4473-91bc-a34af4bfae5a.png") center/cover no-repeat;
+  }
+  .hero__bg video{
+    position:absolute;inset:0;width:100%;height:100%;
+    object-fit:cover;object-position:center;
+    opacity:0;transition:opacity 1s linear;
+  }
+  .hero__bg video.is-ready{opacity:1}
+  .hero__shade{
+    position:absolute;inset:0;z-index:-1;pointer-events:none;
+    background:
+      linear-gradient(to bottom,rgba(0,0,0,.28) 0%,rgba(0,0,0,0) 22%,rgba(0,0,0,0) 55%,rgba(2,8,16,.42) 100%);
+  }
+
+  /* ---------- Nav ---------- */
+  .nav{
+    position:relative;z-index:50;
+    height:var(--nav-h);
+    display:flex;align-items:center;justify-content:space-between;
+    padding:0 var(--gutter);
+  }
+  .brand{display:inline-flex;align-items:center;gap:7px;font-weight:500;font-size:16px;letter-spacing:-.01em}
+  .brand svg{width:18px;height:18px;flex:none}
+
+  .nav__links{display:flex;align-items:center;gap:6px;list-style:none}
+  .nav__link{
+    display:inline-flex;align-items:center;gap:6px;
+    padding:9px 13px;border-radius:999px;
+    font-size:15px;font-weight:400;color:var(--ink-3);
+    transition:color .18s ease;
+  }
+  .nav__link:hover,.nav__item.is-open>.nav__link{color:var(--ink)}
+  .nav__link svg.chev{width:12px;height:12px;flex:none;overflow:visible;transition:transform .2s ease}
+  .nav__item.is-open>.nav__link svg.chev{transform:rotate(180deg)}
+  .nav__lang{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:999px;color:var(--ink-3)}
+  .nav__lang svg{width:17px;height:17px}
+  .nav__lang:hover{color:var(--ink)}
+  .nav__signin{
+    margin-left:4px;
+    padding:10px 18px;border-radius:999px;
+    background:var(--pill);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+    font-size:15px;font-weight:500;color:var(--ink);
+    transition:background .18s ease;
+  }
+  .nav__signin:hover{background:rgba(255,255,255,.14)}
+
+  .nav__burger{display:none;width:40px;height:40px;border-radius:999px;align-items:center;justify-content:center}
+  .nav__burger span{display:block;width:18px;height:1.6px;background:#fff;border-radius:2px;position:relative;transition:background .2s ease}
+  .nav__burger span::before,.nav__burger span::after{content:"";position:absolute;left:0;top:0;width:18px;height:1.6px;background:#fff;border-radius:2px;transition:transform .25s ease}
+  .nav__burger span::before{transform:translateY(-6px)}
+  .nav__burger span::after{transform:translateY(6px)}
+  .nav--menu-open .nav__burger span{background:transparent}
+  .nav--menu-open .nav__burger span::before{transform:rotate(45deg)}
+  .nav--menu-open .nav__burger span::after{transform:rotate(-45deg)}
+
+  /* ---------- Mega menu ---------- */
+  .nav__item{position:relative}
+  .mega{
+    position:absolute;top:calc(100% + 8px);left:-8px;
+    width:680px;
+    padding:12px;
+    display:grid;grid-template-columns:230px 1fr;
+    border-radius:26px;
+    background:var(--panel);
+    backdrop-filter:blur(28px) saturate(1.15);-webkit-backdrop-filter:blur(28px) saturate(1.15);
+    box-shadow:0 30px 80px rgba(0,0,0,.45),inset 0 0 0 1px rgba(255,255,255,.04);
+    opacity:0;visibility:hidden;transform:translateY(-6px) scale(.985);
+    transform-origin:top left;
+    transition:opacity .22s ease,transform .22s ease,visibility 0s linear .22s;
+  }
+  .nav__item.is-open .mega{opacity:1;visibility:visible;transform:none;transition:opacity .22s ease,transform .22s ease,visibility 0s}
+
+  .mega__left{padding:14px 10px 10px 10px}
+  .mega__eyebrow{font-size:13px;color:var(--ink-4);padding:0 10px 14px}
+  .mega__list{list-style:none;display:flex;flex-direction:column;gap:2px;position:relative}
+  .mega__pill{
+    position:absolute;left:0;right:0;top:0;height:40px;border-radius:12px;
+    background:rgba(255,255,255,.1);
+    opacity:0;pointer-events:none;
+    transition:transform .18s cubic-bezier(.2,.8,.2,1),opacity .14s ease;
+  }
+  .mega__pill.is-on{opacity:1}
+  .mega__opt{
+    position:relative;z-index:1;
+    display:flex;align-items:center;gap:8px;
+    width:100%;height:40px;padding:0 10px;
+    border-radius:12px;
+    font-size:16px;color:var(--ink);
+    text-align:left;
+    transition:padding .18s ease;
+  }
+  .mega__opt .arr{width:14px;height:14px;flex:none;margin-left:-22px;opacity:0;transform:translateX(-6px);transition:opacity .16s ease,transform .18s cubic-bezier(.2,.8,.2,1),margin .18s cubic-bezier(.2,.8,.2,1);color:var(--ink-2)}
+  .mega__opt.is-active .arr{opacity:1;transform:none;margin-left:0}
+
+  .mega__right{
+    position:relative;
+    min-height:400px;
+    border-radius:20px;
+    background:var(--panel-inner);
+    overflow:hidden;
+  }
+  .pane{
+    position:absolute;inset:0;
+    padding:26px 30px;
+    opacity:0;
+    transition:opacity .13s linear;
+    pointer-events:none;
+  }
+  .pane.is-active{opacity:1;pointer-events:auto;transition:opacity .01s linear}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  @keyframes popIn{from{opacity:0;scale:.84}to{opacity:1;scale:1}}
+  @keyframes draw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+  .pane .pane__title,.pane .pane__desc,.pane [data-i],.pane .tile svg,.pane .flow path{opacity:0}
+  .pane.is-active .pane__title{animation:fadeIn .14s ease both}
+  .pane.is-active .pane__desc{animation:fadeIn .16s ease both;animation-delay:30ms}
+  .pane.is-active [data-i]{animation:popIn .17s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(70ms + var(--i,0)*35ms)}
+  .pane.is-active .tile svg{animation:fadeIn .15s ease both;animation-delay:calc(120ms + var(--i,0)*35ms)}
+  .pane.is-active .flow path{opacity:1;stroke-dasharray:1;stroke-dashoffset:1;animation:draw .45s ease-out both;animation-delay:calc(90ms + var(--i,0)*45ms)}
+  .pane__title{font-size:17px;font-weight:500;color:var(--ink);margin-bottom:8px}
+  .pane__desc{font-size:15px;line-height:1.45;color:var(--ink-3);max-width:420px}
+  .pane__art{position:absolute;left:30px;right:30px;top:112px;bottom:22px}
+
+  /* gradient orbs */
+  .orb{border-radius:999px;position:absolute;width:44px;height:44px;box-shadow:0 0 0 1px rgba(255,255,255,.08)}
+  .orb--mint{background:radial-gradient(circle at 30% 30%,#bff5e2,#8ad7bf 55%,#58a894)}
+  .orb--lime{background:radial-gradient(circle at 70% 30%,#f2ffa8,#b7e36a 40%,#5f9b53 70%,#2f6a4e)}
+  .orb--peach{background:radial-gradient(circle at 35% 35%,#ffd9a8,#f7a66b 60%,#d57a46)}
+  .orb--sky{background:radial-gradient(circle at 50% 25%,#dff1ff,#a9d0f7 50%,#f6d8a2 100%)}
+  .orb--pink{background:radial-gradient(circle at 35% 35%,#ffd6f6,#e39df1 55%,#a66fd2)}
+  .orb--violet{background:radial-gradient(circle at 30% 40%,#c9b6ff,#8c6cff 55%,#5e4bd6)}
+  .orb--rose{background:radial-gradient(circle at 60% 30%,#ffd0d6,#f58fa6 55%,#c2557d)}
+  .orb--sun{background:radial-gradient(circle at 40% 30%,#fff0b8,#f6c35b 55%,#dc8a3a)}
+  .orb--ocean{background:radial-gradient(circle at 30% 30%,#bfe8ff,#5fb0ea 55%,#2f6fb8)}
+  .orb--coral{background:radial-gradient(circle at 40% 40%,#ffd8b6,#ff9b6e 60%,#d85d4c)}
+  .orb--grass{background:radial-gradient(circle at 35% 35%,#d9ffcf,#8fe08a 55%,#4a9e68)}
+  .avatar{position:absolute;border-radius:999px;object-fit:cover;width:50px;height:50px;box-shadow:0 0 0 1px rgba(255,255,255,.1)}
+
+  /* skeleton lines */
+  .line{position:absolute;height:8px;border-radius:999px;background:rgba(255,255,255,.14)}
+  .line--soft{background:rgba(255,255,255,.09)}
+
+  /* Flow art */
+  .flow svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+  .flow path{fill:none;stroke:rgba(255,255,255,.28);stroke-width:1.6}
+
+  /* Connectors grid */
+  .grid{
+    position:absolute;left:50%;top:104px;transform:translateX(-50%);
+    display:grid;grid-template-columns:repeat(4,80px);gap:14px;
+  }
+  .tile{
+    width:80px;height:80px;border-radius:20px;background:var(--tile);
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.03);
+  }
+  .tile svg{width:34px;height:34px}
+  .tile--empty{background:rgba(255,255,255,.035)}
+
+  /* Teammates row */
+  .team{position:absolute;left:0;right:0;top:66px;display:flex;justify-content:center;gap:18px}
+  .team .orb,.team .avatar{position:static;width:48px;height:48px}
+
+  /* ---------- Hero copy ---------- */
+  .hero__body{
+    flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;
+    padding:clamp(120px,22vh,220px) var(--gutter) clamp(72px,12vh,120px);
+  }
+  .hero__title{
+    font-family:var(--serif);font-weight:400;
+    font-size:clamp(40px,4.75vw,68px);
+    line-height:1.05;letter-spacing:-.012em;
+    color:var(--ink);
+    text-wrap:balance;
+    margin-bottom:18px;
+  }
+  .hero__sub{
+    max-width:500px;
+    font-size:clamp(15px,1.15vw,17px);line-height:1.45;
+    color:var(--ink-2);
+    text-wrap:pretty;
+    margin-bottom:38px;
+  }
+  .wait{
+    width:100%;max-width:450px;
+    display:flex;align-items:center;gap:8px;
+    height:64px;padding:6px 6px 6px 24px;
+    border-radius:999px;
+    background:rgba(255,255,255,.1);
+    backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.1),0 20px 50px rgba(0,0,0,.25);
+  }
+  .wait input{
+    flex:1;min-width:0;height:100%;
+    background:transparent;border:0;outline:0;
+    font:inherit;font-size:15px;color:var(--ink);
+  }
+  .wait input::placeholder{color:var(--ink-2);opacity:1}
+  .wait button{
+    flex:none;height:52px;padding:0 22px;
+    display:inline-flex;align-items:center;gap:8px;
+    border-radius:999px;background:var(--btn);
+    font-size:15px;font-weight:500;color:var(--ink);
+    transition:background .18s ease,transform .18s ease;
+  }
+  .wait button svg{width:14px;height:14px}
+  .wait button:hover{background:#0f1114}
+  .wait button:active{transform:scale(.98)}
+  .legal{margin-top:14px;font-size:11px;color:var(--ink-4)}
+  .legal a{text-decoration:underline;text-underline-offset:2px}
+  .explore{margin-top:22px;font-size:14px;font-weight:500;color:var(--ink);transition:opacity .18s ease}
+  .explore:hover{opacity:.75}
+
+  /* ---------- Responsive ---------- */
+  @media (max-width:1040px){
+    .mega{width:min(680px,calc(100vw - 2*var(--gutter)));left:auto;right:-220px}
+  }
+  @media (max-width:860px){
+    :root{--nav-h:64px}
+    .nav__links{
+      position:fixed;inset:var(--nav-h) 0 0 0;z-index:40;
+      flex-direction:column;align-items:stretch;gap:0;
+      padding:8px var(--gutter) 40px;
+      background:rgba(6,12,20,.86);
+      backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+      overflow-y:auto;
+      opacity:0;visibility:hidden;transform:translateY(-8px);
+      transition:opacity .22s ease,transform .22s ease,visibility 0s linear .22s;
+    }
+    .nav--menu-open .nav__links{opacity:1;visibility:visible;transform:none;transition:opacity .22s ease,transform .22s ease,visibility 0s}
+    .nav__burger{display:inline-flex}
+    .nav__item{border-bottom:1px solid rgba(255,255,255,.06)}
+    .nav__link{width:100%;justify-content:space-between;padding:16px 4px;font-size:17px;border-radius:0}
+    .nav__lang{display:none}
+    .nav__signin{margin:16px 0 0;text-align:center;padding:14px 18px}
+    .mega{
+      position:static;width:100%;padding:0 0 12px;
+      grid-template-columns:1fr;
+      background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;box-shadow:none;
+      opacity:1;visibility:visible;transform:none;
+      display:none;
+    }
+    .nav__item.is-open .mega{display:grid}
+    .mega__left{padding:0}
+    .mega__eyebrow{padding:4px 4px 8px}
+    .mega__opt{height:44px;padding:0 10px}
+    .mega__right{min-height:320px;margin-top:10px;border-radius:18px}
+    .pane{padding:20px}
+    .pane__art{left:20px;right:20px;top:104px}
+    .grid{grid-template-columns:repeat(4,minmax(52px,64px));gap:10px;width:100%;justify-content:center}
+    .tile{width:100%;aspect-ratio:1;height:auto;border-radius:16px}
+    .tile svg{width:28px;height:28px}
+    .team{gap:10px}
+    .team .orb,.team .avatar{width:40px;height:40px}
+  }
+  @media (max-width:560px){
+    .hero__body{padding-top:120px}
+    .hero__title{font-size:clamp(36px,10.5vw,44px);margin-bottom:16px}
+    .hero__sub{font-size:15px;margin-bottom:28px}
+    .wait{height:auto;flex-direction:column;align-items:stretch;padding:8px;border-radius:24px;gap:6px}
+    .wait input{height:48px;padding:0 16px}
+    .wait button{justify-content:center;height:50px}
+    .legal{line-height:1.6;padding:0 12px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{transition-duration:.01ms !important;animation:none !important}
+    .hero__bg video{display:none}
+  }
+</style>
+</head>
+<body>
+
+<section class="hero" id="top">
+  <div class="hero__bg" aria-hidden="true">
+    <!-- Two copies of the same clip; the page crossfades between them at the loop point so the orbit never visibly restarts -->
+    <video class="bg-clip" id="bgVideo" autoplay muted playsinline preload="auto"
+      poster="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20261010_060826_51421542-7933-4473-91bc-a34af4bfae5a.png"
+      src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20261010_085254_c030d6e4-d875-4abb-9a01-4142f6e19cff.mp4"></video>
+    <video class="bg-clip" id="bgVideoB" muted playsinline preload="auto"
+      src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20261010_085254_c030d6e4-d875-4abb-9a01-4142f6e19cff.mp4"></video>
+  </div>
+  <div class="hero__shade" aria-hidden="true"></div>
+
+  <header class="nav" id="nav">
+    <a class="brand" href="#top" aria-label="Offloop home">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <circle cx="12" cy="12" r="9" stroke="#fff" stroke-width="2.2"/>
+        <path d="M12 3a9 9 0 0 1 9 9h-9z" fill="#fff"/>
+      </svg>
+      <span>Offloop</span>
+    </a>
+
+    <button class="nav__burger" id="burger" aria-label="Open menu" aria-expanded="false" aria-controls="navLinks"><span></span></button>
+
+    <ul class="nav__links" id="navLinks">
+      <li class="nav__item" id="productItem">
+        <button class="nav__link" id="productBtn" aria-expanded="false" aria-controls="productMenu">
+          Product
+          <svg class="chev" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+
+        <div class="mega" id="productMenu" role="region" aria-label="Product">
+          <div class="mega__left">
+            <div class="mega__eyebrow">Features</div>
+            <ul class="mega__list" role="tablist" aria-orientation="vertical">
+              <span class="mega__pill" id="megaPill" aria-hidden="true"></span>
+              <li><button class="mega__opt" role="tab" data-pane="flow" aria-selected="false"><svg class="arr" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2 7h9M7.5 3.5 11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Flow</button></li>
+              <li><button class="mega__opt" role="tab" data-pane="botmode" aria-selected="false"><svg class="arr" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2 7h9M7.5 3.5 11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Botmode</button></li>
+              <li><button class="mega__opt" role="tab" data-pane="channels" aria-selected="false"><svg class="arr" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2 7h9M7.5 3.5 11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Channels</button></li>
+              <li><button class="mega__opt" role="tab" data-pane="connectors" aria-selected="false"><svg class="arr" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2 7h9M7.5 3.5 11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Connectors</button></li>
+              <li><button class="mega__opt" role="tab" data-pane="memory" aria-selected="false"><svg class="arr" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2 7h9M7.5 3.5 11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Agent Memory</button></li>
+              <li><button class="mega__opt" role="tab" data-pane="teammates" aria-selected="false"><svg class="arr" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2 7h9M7.5 3.5 11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Teammates</button></li>
+            </ul>
+          </div>
+
+          <div class="mega__right">
+            <!-- Flow -->
+            <div class="pane" data-pane="flow" role="tabpanel">
+              <div class="pane__title">Flow</div>
+              <p class="pane__desc">Plan multi-agent work with visible ownership, gates, and progress.</p>
+              <div class="pane__art flow">
+                <svg viewBox="0 0 400 230" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+                  <path pathLength="1" style="--i:0" d="M40 115 C 90 115, 90 40, 140 40"/>
+                  <path pathLength="1" style="--i:0" d="M40 115 C 90 115, 90 190, 140 190"/>
+                  <path pathLength="1" style="--i:1" d="M140 40 C 190 40, 190 115, 235 115"/>
+                  <path pathLength="1" style="--i:1" d="M140 190 C 190 190, 190 115, 235 115"/>
+                  <path pathLength="1" style="--i:2" d="M235 115 C 290 115, 290 40, 340 40"/>
+                  <path pathLength="1" style="--i:2" d="M235 115 C 290 115, 290 190, 340 190"/>
+                </svg>
+                <span class="orb orb--mint" data-i style="--i:0;left:calc(10% - 22px);top:calc(50% - 22px)"></span>
+                <span class="orb orb--lime" data-i style="--i:1;left:calc(35% - 22px);top:calc(17% - 22px)"></span>
+                <span class="orb orb--peach" data-i style="--i:1.5;left:calc(35% - 22px);top:calc(83% - 22px)"></span>
+                <img class="avatar" data-i alt="" src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20261010_060825_2ca9c30b-7ab3-4fc3-924a-56131622fe50.png" style="--i:3;left:calc(58.75% - 25px);top:calc(50% - 25px)">
+                <span class="orb orb--sky" data-i style="--i:4;left:calc(85% - 22px);top:calc(17% - 22px)"></span>
+                <span class="orb orb--pink" data-i style="--i:4.5;left:calc(85% - 22px);top:calc(83% - 22px)"></span>
+              </div>
+            </div>
+
+            <!-- Botmode -->
+            <div class="pane" data-pane="botmode" role="tabpanel">
+              <div class="pane__title">Botmode</div>
+              <p class="pane__desc">Delegate outcomes while keeping execution visible and reviewable.</p>
+              <div class="pane__art">
+                <span class="orb orb--rose" data-i style="--i:0;left:12%;top:18%"></span>
+                <span class="orb orb--sun" data-i style="--i:1;left:36%;top:18%"></span>
+                <span class="orb orb--grass" data-i style="--i:2;left:60%;top:18%"></span>
+                <span class="orb orb--mint" data-i style="--i:1;left:12%;top:56%"></span>
+                <span class="orb orb--pink" data-i style="--i:2;left:36%;top:56%"></span>
+                <span class="orb orb--violet" data-i style="--i:3;left:60%;top:56%"></span>
+                <span class="orb orb--coral" data-i style="--i:2;left:12%;top:94%;transform:translateY(-50%)"></span>
+                <span class="orb orb--ocean" data-i style="--i:3;left:36%;top:94%;transform:translateY(-50%)"></span>
+                <span class="orb orb--lime" data-i style="--i:4;left:60%;top:94%;transform:translateY(-50%)"></span>
+                <span class="orb orb--sky" data-i style="--i:4;left:84%;top:56%"></span>
+              </div>
+            </div>
+
+            <!-- Channels -->
+            <div class="pane" data-pane="channels" role="tabpanel">
+              <div class="pane__title">Channels</div>
+              <p class="pane__desc">Keep people, agents, files, and decisions in one shared workspace.</p>
+              <div class="pane__art">
+                <span class="orb orb--violet" data-i style="--i:0;left:4%;top:12px;width:52px;height:52px;background:conic-gradient(from 200deg,#f2b5ff,#8fa8ff,#ff9ad5,#c78cff,#f2b5ff)"></span>
+                <span class="line" data-i style="--i:1;left:72px;top:26px;width:150px"></span>
+                <span class="line line--soft" data-i style="--i:2;left:72px;top:84px;width:76%"></span>
+                <span class="line line--soft" data-i style="--i:3;left:72px;top:112px;width:62%"></span>
+                <span class="line line--soft" data-i style="--i:4;left:72px;top:140px;width:40%"></span>
+              </div>
+            </div>
+
+            <!-- Connectors -->
+            <div class="pane" data-pane="connectors" role="tabpanel">
+              <div class="pane__title">Connectors</div>
+              <p class="pane__desc">Give agents scoped access to the tools and data your team uses.</p>
+              <div class="grid" aria-hidden="true">
+                <div data-i style="--i:0" class="tile" title="Notion"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="3" width="16" height="18" rx="2" stroke="#fff" stroke-width="1.6"/><path d="M8 17V7l8 10V7" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg></div>
+                <div data-i style="--i:1" class="tile tile--empty"></div>
+                <div data-i style="--i:2" class="tile" title="GitHub"><svg viewBox="0 0 24 24" fill="#fff"><path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.15-1.11-1.46-1.11-1.46-.91-.62.07-.61.07-.61 1 .07 1.53 1.03 1.53 1.03.9 1.53 2.35 1.09 2.92.83.09-.65.35-1.09.63-1.34-2.22-.25-4.56-1.11-4.56-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02a9.6 9.6 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10 10 0 0 0 12 2z"/></svg></div>
+                <div data-i style="--i:3" class="tile" title="Bolt"><svg viewBox="0 0 24 24" fill="#3ee07a"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg></div>
+                <div data-i style="--i:1" class="tile tile--empty"></div>
+                <div data-i style="--i:2" class="tile" title="Vercel"><svg viewBox="0 0 24 24" fill="#fff"><path d="M12 4l9 16H3z"/></svg></div>
+                <div data-i style="--i:3" class="tile" title="Attio"><svg viewBox="0 0 24 24" fill="none" stroke="#b9a7ff" stroke-width="1.9" stroke-linecap="round"><path d="M4 19c0-7 5-12 12-12"/><path d="M7.5 19c0-5 3.5-8.5 8.5-8.5"/><path d="M11 19c0-3 2-5 5-5"/><path d="M14.5 19c0-1.5 1-2.5 2.5-2.5"/></svg></div>
+                <div data-i style="--i:4" class="tile tile--empty"></div>
+                <div data-i style="--i:2" class="tile" title="Cube"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"><path d="M12 3 4 7.5v9L12 21l8-4.5v-9z"/><path d="M4 7.5 12 12l8-4.5M12 12v9"/></svg></div>
+                <div data-i style="--i:3" class="tile" title="GitLab"><svg viewBox="0 0 24 24"><path d="m12 21 4-12H8z" fill="#e24329"/><path d="M8 9 4.5 9 3 14l9 7z" fill="#fc6d26"/><path d="M16 9l3.5 0L21 14l-9 7z" fill="#fc6d26"/><path d="M4.5 9 5.8 3.5 8 9zM19.5 9 18.2 3.5 16 9z" fill="#e24329"/><path d="M3 14l-.6 1.9c-.1.4.1.8.4 1L12 21zM21 14l.6 1.9c.1.4-.1.8-.4 1L12 21z" fill="#fca326"/></svg></div>
+                <div data-i style="--i:4" class="tile tile--empty"></div>
+                <div data-i style="--i:5" class="tile" title="Stripe"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" fill="#fff"/><path d="M6 10.5h12M7 13.5h10M8.5 8h7M8.5 16h7" stroke="#2b2b2b" stroke-width="1.3" stroke-linecap="round"/></svg></div>
+              </div>
+            </div>
+
+            <!-- Agent Memory -->
+            <div class="pane" data-pane="memory" role="tabpanel">
+              <div class="pane__title">Agent Memory</div>
+              <p class="pane__desc">Carry relevant goals, decisions, and context across ongoing work.</p>
+              <div class="pane__art flow">
+                <svg viewBox="0 0 400 230" preserveAspectRatio="none" aria-hidden="true">
+                  <path pathLength="1" style="--i:0" d="M30 40 C 110 40, 120 115, 30 115"/>
+                  <path pathLength="1" style="--i:1" d="M30 115 C 120 115, 110 195, 30 195"/>
+                </svg>
+                <img class="avatar" data-i alt="" style="--i:0;width:36px;height:36px;left:6px;top:calc(17% - 18px)" src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20261010_060825_46dd45a4-e99b-4524-bdcf-aacf47a8d125.png">
+                <span class="line" data-i style="--i:.6;left:56px;top:calc(17% - 4px);width:120px"></span>
+                <img class="avatar" data-i alt="" style="--i:1.6;width:36px;height:36px;left:6px;top:calc(50% - 18px)" src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20261010_060825_baa671db-33d1-4a4e-8145-cc0ad712a811.png">
+                <span class="line line--soft" data-i style="--i:2.2;left:56px;top:calc(50% - 4px);width:150px"></span>
+                <img class="avatar" data-i alt="" style="--i:3.2;width:36px;height:36px;left:6px;top:calc(85% - 18px)" src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20261010_060826_2ea27dfe-7602-4171-a31e-d6b9f91059b9.png">
+                <span class="line line--soft" data-i style="--i:3.8;left:56px;top:calc(85% - 4px);width:96px"></span>
+              </div>
+            </div>
+
+            <!-- Teammates -->
+            <div class="pane" data-pane="teammates" role="tabpanel">
+              <div class="pane__title">Teammates</div>
+              <p class="pane__desc">Agents that work in your Channels like colleagues.</p>
+              <div class="pane__art">
+                <div class="team">
+                  <img class="avatar" data-i alt="" style="--i:0" src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20261010_060825_46dd45a4-e99b-4524-bdcf-aacf47a8d125.png">
+                  <span class="orb orb--grass" data-i style="--i:1"></span>
+                  <img class="avatar" data-i alt="" style="--i:2" src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20261010_060825_baa671db-33d1-4a4e-8145-cc0ad712a811.png">
+                  <span class="orb orb--pink" data-i style="--i:3"></span>
+                  <img class="avatar" data-i alt="" style="--i:4" src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20261010_060825_2ca9c30b-7ab3-4fc3-924a-56131622fe50.png">
+                </div>
+                <span class="line" data-i style="--i:5;left:50%;top:150px;width:56px;transform:translateX(-50%)"></span>
+                <span class="line line--soft" data-i style="--i:6;left:50%;top:176px;width:120px;transform:translateX(-50%)"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </li>
+      <li class="nav__item"><a class="nav__link" href="#pricing">Pricing</a></li>
+      <li class="nav__item"><a class="nav__link" href="#faqs">FAQs</a></li>
+      <li class="nav__item"><a class="nav__link" href="#blog">Blog</a></li>
+      <li class="nav__item"><a class="nav__link" href="#careers">Careers</a></li>
+      <li class="nav__item"><a class="nav__link" href="#contact">Contact</a></li>
+      <li class="nav__item">
+        <button class="nav__lang" aria-label="Change language">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3 5h10M8 3v2M11.5 5c-.8 3.3-2.9 6.2-6 8M5.5 8.5c1 1.8 2.5 3.4 4.5 4.5"/>
+            <path d="M12.5 21l4.5-11 4.5 11M14.2 17h5.6"/>
+          </svg>
+        </button>
+      </li>
+      <li class="nav__item"><a class="nav__signin" href="#signin">Sign in</a></li>
+    </ul>
+  </header>
+
+  <div class="hero__body">
+    <h1 class="hero__title">Scale your team’s work without scaling headcount</h1>
+    <p class="hero__sub">Offloop helps small teams run recurring work with AI agents across launches, customer follow-up, research, feedback, growth, and operations.</p>
+
+    <form class="wait" action="#" method="post" onsubmit="event.preventDefault(); this.querySelector('button span').textContent='Joined';">
+      <label for="email" class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Email</label>
+      <input id="email" type="email" name="email" placeholder="Email" autocomplete="email" required>
+      <button type="submit">
+        <span>Join the waitlist</span>
+        <svg viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2 7h9M7.5 3.5 11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </form>
+    <p class="legal">Protected by reCAPTCHA · <a href="#privacy">Privacy Policy</a> · <a href="#terms">Terms of Service</a></p>
+    <a class="explore" href="#workflows">Explore agent workflows</a>
+  </div>
+</section>
+
+<script>
+(function(){
+  var nav = document.getElementById('nav');
+  var burger = document.getElementById('burger');
+  var item = document.getElementById('productItem');
+  var btn = document.getElementById('productBtn');
+  var opts = Array.prototype.slice.call(item.querySelectorAll('.mega__opt'));
+  var panes = Array.prototype.slice.call(item.querySelectorAll('.pane'));
+  var video = document.getElementById('bgVideo');
+  var closeTimer = null;
+  var mq = window.matchMedia('(max-width: 860px)');
+
+  function setOpen(open){
+    var was = item.classList.contains('is-open');
+    item.classList.toggle('is-open', open);
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (open && !was){
+      /* Opens with the plain list like the reference; phones have no hover, so show Flow at once */
+      resetMenu();
+      if (mq.matches) activate('flow');
+    }
+  }
+  var pill = document.getElementById('megaPill');
+  var current = null, pendingIn = null;
+  var OUT_MS = 130, GAP_MS = 200;
+  function movePill(opt){
+    if (!opt){ pill.classList.remove('is-on'); return; }
+    pill.style.height = opt.offsetHeight + 'px';
+    pill.style.transform = 'translateY(' + opt.offsetTop + 'px)';
+    pill.classList.add('is-on');
+  }
+  function activate(name){
+    if (name === current) return;
+    var target = null;
+    opts.forEach(function(o){
+      var on = o.dataset.pane === name;
+      if (on) target = o;
+      o.classList.toggle('is-active', on);
+      o.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+    movePill(target);
+    /* 1) outgoing pane fades (130ms)  2) short empty gap  3) incoming pane cascades in */
+    clearTimeout(pendingIn);
+    var hadPane = !!current;
+    panes.forEach(function(p){ p.classList.remove('is-active'); });
+    current = name;
+    pendingIn = setTimeout(function(){
+      panes.forEach(function(p){ p.classList.toggle('is-active', p.dataset.pane === name); });
+    }, hadPane ? OUT_MS + GAP_MS : 40);
+  }
+  function resetMenu(){
+    clearTimeout(pendingIn);
+    current = null;
+    opts.forEach(function(o){ o.classList.remove('is-active'); o.setAttribute('aria-selected','false'); });
+    panes.forEach(function(p){ p.classList.remove('is-active'); });
+    movePill(null);
+  }
+
+  /* Desktop: hover intent */
+  item.addEventListener('mouseenter', function(){
+    if (mq.matches) return;
+    clearTimeout(closeTimer); setOpen(true);
+  });
+  item.addEventListener('mouseleave', function(){
+    if (mq.matches) return;
+    closeTimer = setTimeout(function(){ setOpen(false); }, 140);
+  });
+  /* Click / tap toggles everywhere */
+  btn.addEventListener('click', function(){ setOpen(!item.classList.contains('is-open')); });
+
+  opts.forEach(function(o){
+    o.addEventListener('mouseenter', function(){ if(!mq.matches) activate(o.dataset.pane); });
+    o.addEventListener('focus', function(){ activate(o.dataset.pane); });
+    o.addEventListener('click', function(){ activate(o.dataset.pane); });
+  });
+
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape'){ setOpen(false); nav.classList.remove('nav--menu-open'); burger.setAttribute('aria-expanded','false'); }
+  });
+  document.addEventListener('click', function(e){
+    if (!item.contains(e.target)) setOpen(false);
+  });
+
+  /* Mobile drawer */
+  burger.addEventListener('click', function(){
+    var open = nav.classList.toggle('nav--menu-open');
+    burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+    burger.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    document.body.style.overflow = open ? 'hidden' : '';
+  });
+  window.addEventListener('resize', function(){ if (current){ var o = opts.filter(function(x){return x.dataset.pane===current;})[0]; movePill(o); } });
+  mq.addEventListener('change', function(){
+    nav.classList.remove('nav--menu-open');
+    document.body.style.overflow = '';
+    setOpen(false);
+  });
+
+  /* Background video: fade in once it can play, stay on poster otherwise */
+  var videoB = document.getElementById('bgVideoB');
+  if (video && videoB){
+    var FADE = 1.0;                 /* seconds of overlap at the loop point */
+    var clips = [video, videoB], live = 0, handoff = false;
+    function safePlay(v){ var p = v.play(); if (p && p.catch) p.catch(function(){}); }
+    function reveal(){ video.classList.add('is-ready'); }
+    video.addEventListener('canplay', reveal, {once:true});
+    video.addEventListener('playing', reveal, {once:true});
+
+    /* When the live clip nears its end, start the idle copy from 0 and fade it over the top.
+       Driven by the media's own timeupdate/ended events so it keeps working in background tabs. */
+    function startHandoff(){
+      if (handoff) return;
+      handoff = true;
+      var a = clips[live], b = clips[1 - live];
+      b.currentTime = 0;
+      safePlay(b);
+      b.classList.add('is-ready');
+      setTimeout(function(){
+        a.classList.remove('is-ready');
+        a.pause(); a.currentTime = 0;
+        live = 1 - live; handoff = false;
+      }, FADE * 1000);
+    }
+    clips.forEach(function(v){
+      v.addEventListener('timeupdate', function(){
+        if (v === clips[live] && v.duration && v.currentTime >= v.duration - FADE) startHandoff();
+      });
+      v.addEventListener('ended', function(){ if (v === clips[live]) startHandoff(); });
+    });
+    safePlay(video);
+    document.addEventListener('visibilitychange', function(){ if (!document.hidden) safePlay(clips[live]); });
+  }
+})();
+</script>
+</body>
+</html>
